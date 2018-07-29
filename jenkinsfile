@@ -26,20 +26,20 @@ node {
   // Optional wait for approval
   // input 'Deploy stack?'
 
-  stage ('Terraform Apply') {
-    sh 'terraform apply create.tfplan'
-  }
-
-  stage ('Post Run Tests') {
-    echo "Insert your infrastructure test of choice and/or application validation here."
-    sleep 2
-    sh 'terraform show'
-  }
-
-  stage ('Notification') {
-    mail from: "vijayasree.r@sainsburys.co.uk",
-         to: "vijayasree.r@sainsburys.co.uk",
-         subject: "Terraform build complete",
-         body: "Jenkins job ${env.JOB_NAME} - build ${env.BUILD_NUMBER} complete"
-  }
+#  stage ('Terraform Apply') {
+#    sh 'terraform apply create.tfplan'
+#  }
+#
+#  stage ('Post Run Tests') {
+#    echo "Insert your infrastructure test of choice and/or application validation here."
+#    sleep 2
+#    sh 'terraform show'
+#  }
+#
+#  stage ('Notification') {
+#    mail from: "vijayasree.r@sainsburys.co.uk",
+#         to: "vijayasree.r@sainsburys.co.uk",
+#         subject: "Terraform build complete",
+#         body: "Jenkins job ${env.JOB_NAME} - build ${env.BUILD_NUMBER} complete"
+#  }
 }

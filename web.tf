@@ -9,9 +9,11 @@ variable "private_key_path" {}
 variable "network_address_space" {
   default = "10.1.0.0/16"
 }
+
 variable "subnet1_address_space" {
   default = "10.1.0.0/24"
 }
+
 variable "subnet2_address_space" {
   default = "10.1.1.0/24"
 }
@@ -38,30 +40,26 @@ data "aws_availability_zones" "available" {}
 
 # NETWORKING #
 resource "aws_vpc" "vpc" {
-  cidr_block = "${var.network_address_space}"
+  cidr_block           = "${var.network_address_space}"
   enable_dns_hostnames = "true"
-
 }
 
 resource "aws_internet_gateway" "igw" {
   vpc_id = "${aws_vpc.vpc.id}"
-
 }
 
 resource "aws_subnet" "subnet1" {
-  cidr_block        = "${var.subnet1_address_space}"
-  vpc_id            = "${aws_vpc.vpc.id}"
+  cidr_block              = "${var.subnet1_address_space}"
+  vpc_id                  = "${aws_vpc.vpc.id}"
   map_public_ip_on_launch = "true"
-  availability_zone = "${data.aws_availability_zones.available.names[0]}"
-
+  availability_zone       = "${data.aws_availability_zones.available.names[0]}"
 }
 
 resource "aws_subnet" "subnet2" {
-  cidr_block        = "${var.subnet2_address_space}"
-  vpc_id            = "${aws_vpc.vpc.id}"
+  cidr_block              = "${var.subnet2_address_space}"
+  vpc_id                  = "${aws_vpc.vpc.id}"
   map_public_ip_on_launch = "true"
-  availability_zone = "${data.aws_availability_zones.available.names[1]}"
-
+  availability_zone       = "${data.aws_availability_zones.available.names[1]}"
 }
 
 # ROUTING #
@@ -75,7 +73,7 @@ resource "aws_route_table" "rtb" {
 }
 
 resource "aws_route_table_association" "rta-subnet1" {
- subnet_id      = "${aws_subnet.subnet1.id}"
+  subnet_id      = "${aws_subnet.subnet1.id}"
   route_table_id = "${aws_route_table.rtb.id}"
 }
 
@@ -120,31 +118,34 @@ resource "aws_instance" "nginx1" {
   ami           = "ami-1b791862"
   instance_type = "t2.micro"
   subnet_id     = "${aws_subnet.subnet1.id}"
-#  vpc_security_group_ids = ["${aws_security_group.nginx-sg.id}"]
+
+  #  vpc_security_group_ids = ["${aws_security_group.nginx-sg.id}"]
 
   connection {
     user        = "ec2-user"
     private_key = "${file(var.private_key_path)}"
   }
+}
 
 resource "aws_instance" "nginx2" {
   ami           = "ami-1b791862"
   instance_type = "t2.micro"
   subnet_id     = "${aws_subnet.subnet2.id}"
-#  vpc_security_group_ids = ["${aws_security_group.nginx-sg.id}"]
+
+  #  vpc_security_group_ids = ["${aws_security_group.nginx-sg.id}"]
 
   connection {
     user        = "ec2-user"
     private_key = "${file(var.private_key_path)}"
   }
 
-#  provisioner "remote-exec" {
-#    inline = [
-#      "sudo yum install nginx -y",
-#      "sudo service nginx start",
-#      "echo '<html><head><title>Blue Team Server</title></head><body style=\"background-color:#1F778D\"><p style=\"text-align: center;\"><span style=\"color:#FFFFFF;\"><span style=\"font-size:28px;\">Blue Team</span></span></p></body></html>' | sudo tee /usr/share/nginx/html/index.html"
-#    ]
-#  }
+  #  provisioner "remote-exec" {
+  #    inline = [
+  #      "sudo yum install nginx -y",
+  #      "sudo service nginx start",
+  #      "echo '<html><head><title>Blue Team Server</title></head><body style=\"background-color:#1F778D\"><p style=\"text-align: center;\"><span style=\"color:#FFFFFF;\"><span style=\"font-size:28px;\">Blue Team</span></span></p></body></html>' | sudo tee /usr/share/nginx/html/index.html"
+  #    ]
+  #  }
 }
 
 ##################################################################################
@@ -152,5 +153,5 @@ resource "aws_instance" "nginx2" {
 ##################################################################################
 
 output "aws_instance_public_dns" {
-    value = "${aws_instance.nginx1.public_dns}"
+  value = "${aws_instance.nginx1.public_dns}"
 }
