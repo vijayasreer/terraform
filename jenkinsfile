@@ -22,7 +22,7 @@ node {
   stage ('Terraform Plan') {
     sh 'terraform plan -out=create.tfplan'
   }
-
+#
 #  // Optional wait for approval
 #  // input 'Deploy stack?'
 ##
